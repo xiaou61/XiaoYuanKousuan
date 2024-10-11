@@ -1,2 +1,166 @@
-# -----1-3.6w-0s-
-小猿口算-冲榜/刷排名/专用思路-理论速度1小时/3.6w分 附带0s教程
+## 小猿搜题冲榜/刷排名/专用思路-理论速度1小时/3.6w分 附带0s教程
+
+⚠️：这个方法很多还需要手动操作，我目前无法用代码完全实现，如果你有兴趣可以给我提issue我们一起讨论。
+
+## 冲榜思路
+
+先说整体思路：**抓包+改答案+adb模拟**
+
+之后详细教程：
+
+我这里用到的是小黄鸟，你用别的抓包软件也可以。
+
+
+
+过ssl用这个
+
+![image-20241011150157919](https://xiaou-1305448902.cos.ap-nanjing.myqcloud.com/img/202410111502023.png)
+
+
+
+之后刷分最快的是练习里面去修改题数
+
+![image-20241011150322675](https://xiaou-1305448902.cos.ap-nanjing.myqcloud.com/img/202410111503730.png)
+
+修改题数我这里是改的这个的请求体
+
+![image-20241011150344852](https://xiaou-1305448902.cos.ap-nanjing.myqcloud.com/img/202410111503896.png)
+
+![image-20241011150358481](https://xiaou-1305448902.cos.ap-nanjing.myqcloud.com/img/202410111503513.png)
+
+之后修改完成后，要自己手答一遍。建议直接点**跳过**
+
+之后正常打完后会继续结算页面。(`注意这个时候要关闭抓包软件，建议是在修改过后，是你想要的题目数量后就关闭抓包，不然会结算不了`)
+
+![image-20241011150813675](https://xiaou-1305448902.cos.ap-nanjing.myqcloud.com/img/202410111508879.png)
+
+结算完成后开启抓包，(此时开修改答案为1)
+
+即可完成操作。
+
+之后抓包软件就可以一直开启着。
+
+改答案我这里用到的是我基于这个 [XiaoYuanKouSuan/main.py at main · cr4n5/XiaoYuanKouSuan (github.com)](https://github.com/cr4n5/XiaoYuanKouSuan)的昨天的一个版本修改的当时他还没有练习的模式，现在我看已经有了，可以参考他的代码 当然我的这个也可以用 (这个更新速度很快)里面很多没用的东西我都没删掉。
+
+
+
+```python
+import re
+import time
+import sys
+import threading
+import argparse
+
+import adbutils
+
+from mitmproxy import http
+from mitmproxy.tools.main import mitmdump
+
+auto_jump = True
+
+
+
+
+# 拦截 HTTP 响应，检查 URL 并逐个字段替换
+def response(flow: http.HTTPFlow):
+    # 匹配目标 URL
+    url_pattern = re.compile(r"https://xyks.yuanfudao.com/leo-math/android/exams.+")
+
+    # 如果 URL 匹配
+    if url_pattern.match(flow.request.url):
+        # 如果响应类型是 JSON
+        if "application/json" in flow.response.headers.get("Content-Type", ""):
+
+            response_text = flow.response.text
+
+            # 使用正则表达式逐个替换字段
+            response_text = re.sub(r'"answer":"[^"]+"', '"answer":"1"', response_text)
+            response_text = re.sub(r'"answers":\[[^\]]+\]', '"answers":["1"]', response_text)
+
+            # 更新修改后的响应体
+            flow.response.text = response_text
+
+
+        threading.Thread(target=answer_write, args=(len(re.findall(r'answers', flow.response.text)),)).start()
+
+
+
+
+def jump_to_next():
+    # 结束，自动进下一局
+    device = adbutils.adb.device()
+    time.sleep(3)
+    command = "input tap 540 1520"
+    device.shell(command)  # “开心收下”按钮的坐标
+    time.sleep(0.3)
+    command = "input tap 780 1820"
+    device.shell(command)  # “继续”按钮的坐标
+    time.sleep(0.3)
+    command = "input tap 510 1700"
+    device.shell(command)  # “继续PK”按钮的坐标
+
+
+def swipe_screen():
+    xy = [[1480, 1050], [1440, 1470]]
+    command = f"input swipe {xy[0][1]} {xy[0][0]} {xy[1][1]} {xy[1][0]} 0"
+
+    device = adbutils.adb.device()
+    device.shell(command)
+
+
+def answer_write(answer):
+    time.sleep(6)
+    for _ in range(5500):
+        print("11111")
+        swipe_screen()
+        time.sleep(0.01)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Mitmproxy script")
+    parser.add_argument("-P", "--port", type=int, default=8080, help="Port to listen on")
+    parser.add_argument("-H", "--host", type=str, default="192.168.190.1", help="Host to listen on")
+    args = parser.parse_args()
+
+    sys.argv = ["mitmdump", "-s", __file__, "--listen-host", args.host, "--listen-port", str(args.port)]
+    mitmdump()
+```
+
+
+
+## 0s教学
+
+关于0s
+
+就是改为一道题，然后用adb
+
+这里就不建议开启抓包了，改好一次后(这里指的是改好题目数量)，关闭抓包，不断的点**再练一次**在刷成绩，也不建议**修改答案**。
+
+因为这个0s是我昨天弄成的，我不知道今天是否还有用。
+
+还是很容易刷出来的，基本上我刷俩分钟就出来了。
+
+**刷出来的标志**：就是在图标还没有完全消失之前adb已经绘制好了答案。这样就是0s。
+
+但是0s的话，当前账号就无法看到你取得0s的那个排行榜的榜单了，别人那里是显示的，不过排名是0
+
+
+
+## 碎碎念
+
+介绍一下自己，大三学生，计算机专业。
+
+从昨天一直搞到今天，大概也弄了十来个小时了。
+
+一路看着各种思路的出现
+
+从最开始的autojs ocr
+
+到后面的抓包提前拿答案。到改包改答案。 pk30题改1题。
+
+我这个思路不见得是最优的方案，并且只是思路，代码实现方面还需要有人去优化。
+
+网络安全路漫漫，这次的事件，不只是给小猿平台，**更是给更多的程序员提了醒**，其实多一次验证，就可以完美避开这个问题。
+
+
+
