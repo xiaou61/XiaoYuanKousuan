@@ -129,6 +129,8 @@ if __name__ == "__main__":
 
 
 ## 0s教学
+0s这些是我昨天弄的，如果你按照我的方法是可行的
+![01a1dc5bb84ded88a33d1d254619f25](https://github.com/user-attachments/assets/4de9cf89-9a42-4e4f-a5b2-b8d61a87b3b4)
 
 关于0s
 
