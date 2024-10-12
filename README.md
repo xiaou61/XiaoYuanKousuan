@@ -1,7 +1,40 @@
 ## 小猿搜题冲榜/刷排名/专用思路-理论速度1小时/3.6w分 附带0s教程
 最新10-12 21:48 可直接看这个项目 已经测试pk可用，https://github.com/cr4n5/XiaoYuanKouSuan  顺便补一句，如果冲榜也可选择1w道题，可以改成功
 
+pk的代码精简版：
+```python
+import argparse
+import sys
 
+from mitmproxy.tools.main import mitmdump
+
+# 命令行参数解析
+parser = argparse.ArgumentParser(description="Mitmproxy script")
+parser.add_argument("-P", "--port", type=int, default=8080, help="Port to listen on")
+parser.add_argument("-H", "--host", type=str, default="192.168.190.1", help="Host to listen on")
+args = parser.parse_args()
+
+sys.argv = ["mitmdump", "-s", __file__, "--listen-host", args.host, "--listen-port", str(args.port)]
+
+
+# 直接处理请求和响应
+def handle_flow(flow):
+    print(f"Response: {flow.response.status_code} {flow.request.url}")
+
+    if "https://leo.fbcontent.cn/bh5/leo-web-oral-pk/exercise_" in flow.request.url:
+        with open("exercise.js", "r", encoding="utf-8") as f:
+            text = f.read()
+
+        if text:
+            flow.response.text = text
+            print("修改成功")
+        else:
+            print("未能修改响应文本")
+
+
+# 启动 mitmdump
+mitmdump()
+```
 
 
 
