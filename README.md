@@ -1,7 +1,7 @@
 ## 小猿搜题冲榜/刷排名/专用思路-理论速度1小时/3.6w分 附带0s教程
 最新10-12 21:48 可直接看这个项目 已经测试pk可用，https://github.com/cr4n5/XiaoYuanKouSuan  顺便补一句，如果冲榜也可选择1w道题，可以改成功
 
-pk的代码精简版(要去那个项目里面下载上那个js文件)：
+pk的代码精简版(要去那个项目里面下载上那个js文件)Mitmproxy的端口和host自己去改，代码里面是我的：
 ```python
 import argparse
 import sys
