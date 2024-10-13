@@ -10,6 +10,7 @@ https://github.com/MDYY1/XiaoYuanKouSuan_ShuaFen_Frida_Hook
 这里我也贴上js
 这里建议题数别太高，不然会卡甚至是闪退，亲测1w是极限了差不多，(会黑屏一会，但是会正常给经验)
 ![image](https://github.com/user-attachments/assets/6fe0f307-d2d9-4f69-a8f7-10b2db3a08b9)
+<img width="887" alt="0eea0f62eb07424d953503bd267aff8" src="https://github.com/user-attachments/assets/3840d4a0-92b7-4dc0-9466-a2c425996403">
 
 ```js
 const num = 2000 //题数
