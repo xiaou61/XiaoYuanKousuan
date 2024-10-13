@@ -1,4 +1,97 @@
 ## 小猿搜题冲榜/刷排名/专用思路-理论速度1小时/3.6w分 附带0s教程
+2024-10-13 16:36 
+**最新真正意义上的0s** 不管你做题速度多慢，提交后为0s 这个的整体思路是通过frida进行拦截，修改做题用时。
+先看结果
+![image](https://github.com/user-attachments/assets/01c4333e-979e-48bd-8716-e91674e169bb)
+
+最先是这个项目所提出来的方案
+https://github.com/Hawcett/XiaoYuanKouSuan_Frida_hook
+之后我这里简单教学一下我对于这个方案实操的过程。
+代码方面使用的是
+x781078959用户写出的
+https://github.com/x781078959/xyks/tree/master/frida/submit
+首先是mumu模拟器安装firda-service 这里推荐的是14.2.18版本。(前俩天更新的那个版本没有适配mumu模拟器，安装会出现问题)
+
+之后把包移动到data/local/tmp这里
+![image](https://github.com/user-attachments/assets/041ea03b-cfbc-4d48-96b9-21b67e8c8f9e)
+
+之后用adb shell进入adb控制台把他启动起来就可以
+![image](https://github.com/user-attachments/assets/9efe9d0a-7ff6-4cd0-86c3-af9688525635)
+
+
+这个的https://github.com/x781078959/xyks/tree/master/frida/submit代码可以直接用。如果你出现无法获得pid，(这个我刚才操作出现过，不过后面就没有再出现了。)
+可以使用gg修改器去查看pid。
+![image](https://github.com/user-attachments/assets/d3c8ffd2-42d5-49dd-8237-853652bacdf5)
+之后运行这个代码就没问题了
+```python
+import json
+import sys
+
+import frida
+
+# 获取 PID
+pid = 3602
+
+# 通过链接到虚拟机frida-server
+device = frida.get_usb_device()
+
+# 附加到已有进程的PID
+session = device.attach(pid)
+
+# 加载js文件
+with open("submit.js", encoding='utf-8') as f:
+    script = session.create_script(f.read())
+
+# 设置控制台消息处理程序
+def on_message(message, data):
+    print(1)
+    if message['type'] == 'send':
+        print(1)
+        # 复制粘贴 https://github.com/Hawcett/XiaoYuanKouSuan_Frida_hook 的代码
+        bytes_obj = bytes.fromhex(message['payload'])
+        string = bytes_obj.decode('utf-8')
+        string = string.replace(r'\"', "%")
+        # 修正null不加引号导致的错误
+        string = string.replace("null", '"null"')
+        print("字符串: ", string)
+        json_data = json.loads(string)
+        print(json_data)
+        print('原始花费时间：', json_data['costTime'])
+        # TODO 时间不要修改为0 最低为1 否则会有难以解决的错误
+        json_data['costTime'] = 1
+        print('现在花费时间：', json_data['costTime'])
+        print(json_data)
+        data = str(json_data).replace('%', r'\"')
+        data = str(data).replace('\'', '\"')
+        data = str(data).replace(' ', '')
+        script.post({'type': 'send', 'my_data': data})
+    else:
+        print("[{}] {}".format(message['type'], message['description']))
+
+# 设置消息处理程序
+script.on('message', on_message)
+
+# 加载js文件并获取脚本输出的信息
+script.load()
+# 保持脚本运行
+sys.stdin.read()
+```
+⚠️：这个脚本不会修改题目数量和答案，只是在提交的时候会显示0s。
+
+
+
+之后是另外一个xp模块的项目(这个适合想要冲全国榜的)
+https://github.com/zhangLog08/Simian
+这个可以方便快速的完成下面的功能
+**自定义答案(题数不变)
+模式二:自定义答案(只有一道题)**
+冲榜方法可以看这里：https://www.bilibili.com/video/BV1Y52vYVEEd/?spm_id_from=333.999.0.0
+
+
+
+
+
+
 最新10-12 21:48 可直接看这个项目 已经测试pk可用，https://github.com/cr4n5/XiaoYuanKouSuan  顺便补一句，如果冲榜也可选择1w道题，可以改成功
 
 pk的代码精简版(要去那个项目里面下载上那个js文件)Mitmproxy的端口和host自己去改，代码里面是我的：
