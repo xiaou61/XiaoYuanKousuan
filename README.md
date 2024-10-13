@@ -9,7 +9,14 @@ https://github.com/MDYY1/XiaoYuanKouSuan_ShuaFen_Frida_Hook
 去他这里下载上js文件
 这里我也贴上js
 这里建议题数别太高，不然会卡甚至是闪退，亲测1w是极限了差不多，(会黑屏一会，但是会正常给经验)
-![Uploading c542905f3f21a605c4e048687f1e105.jpg…]()
+![c542905f3f21a605c4e048687f1e105](https://github.com/user-attachments/assets/afe06a6f-403c-4e0c-8d65-0471a705ac44)
+
+
+
+
+
+
+
 
 <img width="887" alt="0eea0f62eb07424d953503bd267aff8" src="https://github.com/user-attachments/assets/3840d4a0-92b7-4dc0-9466-a2c425996403">
 
