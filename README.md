@@ -1,4 +1,64 @@
-## 小猿搜题冲榜/刷排名/专用思路-理论速度1小时/3.6w分 附带0s教程
+## 小猿搜题冲榜/刷排名/专用思路一s10w分 附带0s教程
+
+
+2024-10-13 18:43 
+**最新刷分思路真正的万分思路**
+首先感谢这个项目的作者
+https://github.com/MDYY1/XiaoYuanKouSuan_ShuaFen_Frida_Hook
+之后我来说一下教程
+去他这里下载上js文件
+这里我也贴上js
+这里建议题数别太高，不然会卡甚至是闪退，亲测1w是极限了差不多，(会黑屏一会，但是会正常给经验)
+![image](https://github.com/user-attachments/assets/6fe0f307-d2d9-4f69-a8f7-10b2db3a08b9)
+
+```js
+const num = 2000 //题数
+function Hookr2B(){
+	Java.perform(function(){
+		const JString= Java.use("java.lang.String")
+		let r2 = Java.use("com.fenbi.android.leo.utils.r2")
+		r2.b.overload("[B").implementation = function (data) {
+			data = JSON.parse(String.fromCharCode(...new Uint8Array(data)))
+			data.costTime = 1
+			for(let i=0;i<num;i++){
+				data.questions.push({"answers":[">"],"content":"5\\circle3","costTime":319,"errorState":0,"examId":0,"id":1,"keypointId":0,"ruleType":0,"script":"[[{\"x\":388.6875,\"y\":1198.2977},{\"x\":431.756,\"y\":1198.2083},{\"x\":474.76447,\"y\":1202.074},{\"x\":515.89124,\"y\":1211.7893},{\"x\":565.727,\"y\":1224.9923},{\"x\":618.53485,\"y\":1237.8978},{\"x\":666.50287,\"y\":1247.9371},{\"x\":709.3284,\"y\":1258.8792},{\"x\":722.86755,\"y\":1271.5013},{\"x\":712.543,\"y\":1301.1832},{\"x\":672.1436,\"y\":1350.3722},{\"x\":616.1422,\"y\":1401.6215},{\"x\":552.83264,\"y\":1445.8134},{\"x\":486.4492,\"y\":1477.8749},{\"x\":436.92188,\"y\":1499.6764}]]","status":1,"userAnswer":">","wrongScript":"[]"})
+			}
+			data = JString.$new(JSON.stringify(data)).getBytes()
+			return this["b"](data)
+		}
+	})
+}
+setImmediate(Hookr2B)
+```
+之后还是python运行这个，pid可以用gg模拟器来获取。
+之后注入成功后进入练习，答十道题
+```python
+
+
+import sys
+import frida
+
+# 获取 PID
+pid = 4338
+
+# 通过链接到虚拟机frida-server
+device = frida.get_usb_device()
+
+# 附加到已有进程的PID
+session = device.attach(pid)
+
+# 加载js文件
+with open("2.js", encoding='utf-8') as f:
+    script = session.create_script(f.read())
+
+
+# 加载js文件并获取脚本输出的信息
+script.load()
+# 保持脚本运行
+sys.stdin.read()
+```
+进行结算就可以了
+
 2024-10-13 16:36 
 **最新真正意义上的0s** 不管你做题速度多慢，提交后为0s 这个的整体思路是通过frida进行拦截，修改做题用时。
 
