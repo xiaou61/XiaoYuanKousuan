@@ -23,7 +23,9 @@ https://github.com/x781078959/xyks/tree/master/frida/submit
 ![image](https://github.com/user-attachments/assets/9efe9d0a-7ff6-4cd0-86c3-af9688525635)
 
 
-这个的https://github.com/x781078959/xyks/tree/master/frida/submit代码可以直接用。如果你出现无法获得pid，(这个我刚才操作出现过，不过后面就没有再出现了。)
+这个的https://github.com/x781078959/xyks/tree/master/frida/submit
+
+代码可以直接用。如果你出现无法获得pid，(这个我刚才操作出现过，不过后面就没有再出现了。)
 可以使用gg修改器去查看pid。
 ![image](https://github.com/user-attachments/assets/d3c8ffd2-42d5-49dd-8237-853652bacdf5)
 之后运行这个代码就没问题了
