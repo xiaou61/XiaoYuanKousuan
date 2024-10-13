@@ -37,7 +37,7 @@ function Hookr2B(){
 		}
 	})
 }
-setImmediate(Hookr2B)
+setTimeout(Hookr2B, 0);
 ```
 之后还是python运行这个，pid可以用gg模拟器来获取。
 之后注入成功后进入练习，答十道题
