@@ -141,6 +141,13 @@ mitmdump()
 https://github.com/xmexg/xyks/issues/9
 ⚠️：改方法在pk模式热更新加密数据后依旧可用。不知道什么时候会被修复
 
+
+
+
+
+
+
+## 0S教程
 先放战绩：
 ![f70b43fe42abdf1d34d3e17e08b46e3](https://github.com/user-attachments/assets/d0ea44a9-78f6-4462-989f-c2aabbab88aa)
 ![01a1dc5bb84ded88a33d1d254619f25](https://github.com/user-attachments/assets/7165d5af-4033-43fc-becd-faaf79feb94e)
