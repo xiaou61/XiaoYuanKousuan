@@ -3,6 +3,132 @@
 **本项目严禁售卖，只供学习娱乐使用。请于24小时内删除。使用本项目所产生的任何后果由使用者自行承担。在使用本项目之前，请确保您已充分了解相关法律法规，并确保您的行为符合所在国家或地区的法律要求。未经授权的情况下，请勿将本项目用于商业用途或其他非法用途。转载使用请标明出处。**
 
 **目前冲榜 刷排名都已是最优思路**
+2024-10-15 20:15
+协议刷题(可以做到不打开页面自动刷胜场)
+来自 https://github.com/xmexg/xyks/issues/35 可以直接去看他这个，注意这个方式需要手动的部分有些多。有一定的技术含量。
+
+之后是他这个main.py运行的时候多线程我有时候会有一些莫名其妙的问题，所以我稍微改了一下，其他的js之类的我都没做修改。如果你用**他这个没有问题当然用他这个就可以了**(一般情况下是都没问题的)。
+我这个是加上了一个自选题数。
+之后说需要修改的地方，首先是俩个url
+matchV2_url和upAnswer_url 这俩个需要修改成你自己的。
+cookie里面的YFD_U ks_persistent userid需要修改成你自己的。(这里用到他那里的get_cookie的py脚本)
+脚本成功的话结果应该是这个样子
+![image](https://github.com/user-attachments/assets/c4507e3b-fcff-4164-8cf3-2b50d6667c0a)
+如果说获取到试题未解密大概长度是73的。就是matchV2_url和upAnswer_url 没有修改好。
+
+```python
+import base64
+import gzip
+import time
+import requests
+import json
+import threading
+from hook.gan_sign.gan_sign_model import FridaSignExtractor  # 用于生成sign
+from hook.matchV2_byDataDecryptCommand.do_matchV2_byDataDecryptCommand_model import FridaResponseDecrypt  # 用于解密试题
+from hook.answer_encrypt.do_answer_encrypt_model import FridaRequestEncrypt  # 用于加密答案
+
+# 配置cookie
+cookies = {
+    "YFD_U": "3847438009944888250",
+    "__sub_user_infos__": "",
+    "g_loc": "",
+    "g_sess": "",
+    "ks_deviceid": "",
+    "ks_persistent": "QMmkLezpVEnIDy5DBBYH8JCtetnHBMoeF/oLExT1M0Mm3vXOWYQkW94Fup6lG1fG/nwHtujAywRgm/iYSBKbz/M4NepnRtXRxV/mxXQN7Ec=; sid=5378041981795643460",
+    "ks_sess": "",
+    "persistent": "",
+    "sess": "wXmbuKWPmdrsrkkQ7bqj3zCfG8Jpa7yOIlYCFWMVt3lFRC7Qh0Gtw40S358h6ct2YzGCSQKswQvT1pKoHRNL9ACDDrtZM+Mq2O+jKz4l1Ks=",
+    "sid": "",
+    "userid": "1053892750"
+}
+
+# 定义要执行的次数
+execution_count = 50 # 这里填入你要重复的次数
+
+
+def execute_task():
+    try:
+        # 生成签名
+        #这里的第三个参数是pid
+        getQuestion_extractor = FridaSignExtractor("com.fenbi.android.leo", "hook/gan_sign/gan_sign_model.js", 15120)
+        getQuestion_extractor.start()
+        getQuestion_sign_value = getQuestion_extractor.getsign("/leo-game-pk/android/math/pk/match/v2")
+        print("gan_sign_model sign value:", getQuestion_sign_value)
+
+        # 获取试题
+        matchV2_url = (
+            f"https://xyks.yuanfudao.com/leo-game-pk/android/math/pk/match/v2?"
+            f"pointId=2&_productId=611&platform=android32&version=3.93.3&vendor=fenbi"
+            f"&av=5&sign={getQuestion_sign_value}&deviceCategory=pad"
+        )
+        matchV2_response = requests.post(matchV2_url, headers={
+            "cookie": "; ".join([f"{k}={v}" for k, v in cookies.items()])
+        })
+        print("获取到试题未解密大概长度", len(matchV2_response.text))
+
+        # 解密试题
+        #这里的第三个参数是pid
+        decrypt = FridaResponseDecrypt("com.fenbi.android.leo",
+                                       "hook/matchV2_byDataDecryptCommand/do_matchV2_byDataDecryptCommand_model.js",
+                                       15120)
+        decrypt.start()
+        match_question = decrypt.getstr(base64.b64encode(matchV2_response.content).decode('utf-8'))
+        print("解密试题: ", match_question)
+
+        # 构建答案数据包
+        match_question_json = json.loads(match_question)
+        answer_json = match_question_json["examVO"]
+        answer_json["correctCnt"] = answer_json["questionCnt"]
+        answer_json["costTime"] = 100
+        answer_json["updatedTime"] = int(time.time() * 1000)
+        for question in answer_json["questions"]:
+            question["status"] = 1
+            question["userAnswer"] = question["answer"][0]
+            question["script"] = ""
+            question["curTrueAnswer"] = {
+                "recognizeResult": question["answer"][0],
+                "pathPoints": [],
+                "answer": 1,
+                "showReductionFraction": 0
+            }
+        answer_data = json.dumps(answer_json, ensure_ascii=False)
+        print("生成答案: ", answer_data)
+
+        # 提交答案
+        answer_data_base64 = base64.b64encode(answer_data.encode('utf-8')).decode('utf-8')
+        request_encrypt = FridaRequestEncrypt("com.fenbi.android.leo", "hook/answer_encrypt/do_answer_encrypt_model.js",
+                                              None)
+        request_encrypt.start()
+        answer_encrypt_base64 = request_encrypt.get_request_encrypt(answer_data_base64)
+        upAnswer_sign_value = getQuestion_extractor.getsign("/leo-game-pk/android/math/pk/submit")
+        upAnswer_url = f"https://xyks.yuanfudao.com/leo-game-pk/android/math/pk/submit?_productId=611&platform=android32&version=3.93.3&vendor=fenbi&av=5&sign={upAnswer_sign_value}&deviceCategory=pad"
+        upAnswer_response = requests.put(url=upAnswer_url, headers={
+            "cookie": "; ".join([f"{k}={v}" for k, v in cookies.items()])
+        }, data=base64.b64decode(answer_encrypt_base64))
+        print("提交结果： ", upAnswer_response.text)
+
+    except Exception as e:
+        print("执行任务时出错: ", e)
+
+
+def main():
+    threads = []
+    for _ in range(execution_count):
+        thread = threading.Thread(target=execute_task)
+        thread.start()
+        threads.append(thread)
+        time.sleep(1)  # 控制线程启动间隔
+    for thread in threads:
+        thread.join()  # 等待所有线程完成
+
+    print("所有任务执行完成，脚本退出。")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+
 
 2024-10-15 12:57
 首先看战绩
